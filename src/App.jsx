@@ -18,14 +18,15 @@ import ForgetPassword from "./Pages/ForgetPassword";
 import SignUp from "./Pages/SignUp";
 import Favourite from "./Pages/Favourite";
 import SearchBox from "./Components/Navbar/SearchBox";
+import Cart from "./Pages/Cart";
 import { useState } from "react";
-
 import { Toaster } from "react-hot-toast";
+import store from "./Redux/store";
+import { Provider } from "react-redux";
+import Map from "./Components/Map/Map";
 
 function App() {
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
 
   // List of available products
   const products = [
@@ -38,38 +39,43 @@ function App() {
     "Onion",
   ];
 
-
-
   return (
     <>
-      <ChakraProvider>
-        <BrowserRouter>
-          {/* ✅ Pass products to Navbar */}
-          <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} products={products} />
+      <Provider store={store}>
+        <ChakraProvider>
+          <BrowserRouter>
+            {/* ✅ Pass products to Navbar */}
+            <Navbar
+              isLoggedIn={isLoggedIn}
+              setIsLoggedIn={setIsLoggedIn}
+              products={products}
+            />
 
-          <Routes>
-            {/* <Route path="/" element={<Layout />} /> */}
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/organic-fruits" element={<OrganicFruits />} />
-            <Route path="/aggregate-fruits" element={<AggregrateFruits />} />
-            <Route path="/pits-fruits" element={<PitsFruits />} />
-            <Route path="/legumas-fruits" element={<LegumasFruits />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/my-account" element={<MyAccount />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/forgetPassword" element={<ForgetPassword />} />
-            <Route path="/signUp" element={<SignUp />} />
-            {/* <Route path='/cart' element={<Cart />} /> */}
-            <Route path="/favourite" element={<Favourite />} />
-            <Route path="/searchbox" element={<SearchBox/>}/>
-          </Routes>
-          <Toaster />
-          <Footer />
-        </BrowserRouter>
-      </ChakraProvider>
+            <Routes>
+              {/* <Route path="/" element={<Layout />} /> */}
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/organic-fruits" element={<OrganicFruits />} />
+              <Route path="/aggregate-fruits" element={<AggregrateFruits />} />
+              <Route path="/pits-fruits" element={<PitsFruits />} />
+              <Route path="/legumas-fruits" element={<LegumasFruits />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/my-account" element={<MyAccount />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/map" element={<Map></Map>}/>
+              <Route path="/forgetPassword" element={<ForgetPassword />} />
+              <Route path="/signUp" element={<SignUp />} />
+              <Route path="/cart" element={<Cart/>} />
+              <Route path="/favourite" element={<Favourite />} />
+              <Route path="/searchbox" element={<SearchBox />} />
+            </Routes>
+            <Toaster />
+            <Footer />
+          </BrowserRouter>
+        </ChakraProvider>
+      </Provider>
     </>
   );
 }

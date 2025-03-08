@@ -6,8 +6,13 @@ import "./Navbar.css";
 import SearchBox from "./SearchBox";
 import DrawerMenu from "./DrawerMenu";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }) {
+
+    const cartLength = useSelector((state) => state.cart.cartItems.length);
+    
+  
   const [isSticky, setIsSticky] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
 
@@ -97,9 +102,11 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
           >
             HOME
           </Link>
-          <ShopLink />
+          {/* <ShopLink /> */}
           <PagesLink />
           <Link to={"/contact"}>CONTACT</Link>
+          <Link to={"/map"}>MAP</Link>
+
         </HStack>
 
         <HStack
@@ -135,7 +142,9 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               alignItems={"center"}
               borderRadius={"50%"}
             >
+              <Link to={"/Cart"}>
               <i className="ri-shopping-bag-2-line text-2xl text-[#5EC49D] "></i>
+              </Link>
               <Box
                 className="group"
                 position={"absolute"}
@@ -150,7 +159,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
                 justifyContent={"center"}
                 alignItems={"center"}
               >
-                0
+                {`${cartLength}`}
               </Box>
             </Container>
           </Link>

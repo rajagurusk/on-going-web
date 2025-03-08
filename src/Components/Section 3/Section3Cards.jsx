@@ -12,8 +12,12 @@ import React, { useState } from "react";
 import { FaShoppingBag, FaHeart, FaShareAlt } from "react-icons/fa";
 import data from "../../assets/Data";
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { addToCart, removeFromCart } from "../../Redux/cartSlice";
 
 function Section3Cards() {
+  const dispatch = useDispatch();
+
   const [cardStates, setCardStates] = useState(
     data.map(() => ({ isClicked: false, isOverlayVisible: false }))
   );
@@ -35,18 +39,29 @@ function Section3Cards() {
   };
 
   const addToCartHandler = (item) => {
-    // const quantity = 1;
-    // console.log("Added to cart", item);
-  
-    toast.success("Added to cart", {
-      position: 'bottom-center', // Set the position to bottom-center
-    });
-  
-    
-  };
-  
-  
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
 
+    if (!isLoggedIn) {
+      toast.error("Please log in to add items to your cart.", {
+        position: "bottom-center",
+        autoClose: 5000,
+      });
+      return; // Don't proceed with adding the item to the cart if the user is not logged in
+    }
+
+    dispatch(
+      addToCart({
+        id: item.id,
+        itemImage: item.itemImage,
+        itemTitle: item.itemTitle,
+        price: item.price,
+      })
+    );
+
+    toast.success("Added to cart", {
+      position: "bottom-center", // Set the position to bottom-center
+    });
+  };
 
   return (
     <>
@@ -179,7 +194,6 @@ function Section3Cards() {
           </GridItem>
         ))}
       </Grid>
-
     </>
   );
 }
