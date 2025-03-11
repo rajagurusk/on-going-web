@@ -24,6 +24,8 @@ import { Toaster } from "react-hot-toast";
 import store from "./Redux/store";
 import { Provider } from "react-redux";
 import Map from "./Components/Map/Map";
+import Hero from "./Components/Hero Section/Hero";
+import ShopPage from "./Components/Hero Section/ShopPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,7 +56,7 @@ function App() {
             <Routes>
               {/* <Route path="/" element={<Layout />} /> */}
               <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
+              {/* <Route path="/shop" element={<Shop />} /> */}
               <Route path="/organic-fruits" element={<OrganicFruits />} />
               <Route path="/aggregate-fruits" element={<AggregrateFruits />} />
               <Route path="/pits-fruits" element={<PitsFruits />} />
@@ -64,12 +66,14 @@ function App() {
               <Route path="/faq" element={<Faq />} />
               <Route path="/my-account" element={<MyAccount />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/map" element={<Map></Map>}/>
+              <Route path="/map" element={<Map></Map>} />
               <Route path="/forgetPassword" element={<ForgetPassword />} />
               <Route path="/signUp" element={<SignUp />} />
-              <Route path="/cart" element={<Cart/>} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="/favourite" element={<Favourite />} />
               <Route path="/searchbox" element={<SearchBox />} />
+              <Route path="/" element={<Hero />} />
+              <Route path="/shop" element={<ShopPage />} />
             </Routes>
             <Toaster />
             <Footer />

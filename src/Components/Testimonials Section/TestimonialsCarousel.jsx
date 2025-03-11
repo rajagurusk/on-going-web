@@ -146,7 +146,7 @@ function TestimonialsCarousel() {
             </VStack>
           </Box>
         </SwiperSlide>
-        Slide 3
+        
         <SwiperSlide>
           {/* Testimonial Card */}
           <Box

@@ -1,7 +1,12 @@
 import { Box, VStack, Image, Button } from "@chakra-ui/react";
 import HeroBg from "../../assets/Hero bg.jpg";
+import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+
 
 function Hero() {
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
+
   return (
     <Box
       width={"100%"}
@@ -72,6 +77,8 @@ function Hero() {
               border: "1px solid black",
               color: "black",
             }}
+            onClick={() => navigate("/shop")} // ✅ Navigate to /shop
+
           >
             Shop Now
           </Button>

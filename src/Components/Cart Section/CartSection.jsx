@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Text, VStack, Image, Button, HStack } from "@chakra-ui/react";
+import { Box, Text, VStack, Image, Button, HStack, useToast } from "@chakra-ui/react";
 import {
   removeFromCart,
   decreaseQuantity,
@@ -10,6 +10,8 @@ import {
 function Cart() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+  const toast = useToast(); // Initialize Toast
 
   const removeItemHandler = (itemId) => {
     dispatch(removeFromCart(itemId));
@@ -51,9 +53,15 @@ function Cart() {
       name: "DharaviVegShop",
       description: "Order Payment",
       handler: function (response) {
-        alert(
-          "Payment Successful! Payment ID: " + response.razorpay_payment_id
-        );
+        // Use Toast here instead of alert
+        toast({
+          title: "Payment Successful!",
+          description: `Payment ID: ${response.razorpay_payment_id}`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        setPaymentSuccessful(true); // Set payment successful after Razorpay response
       },
       prefill: {
         name: "John Doe",
@@ -71,7 +79,9 @@ function Cart() {
 
   return (
     <Box p={5} textAlign="center">
-      <Text fontSize="2xl" fontWeight="bold">Your Cart</Text>
+      <Text fontSize="2xl" fontWeight="bold">
+        Your Cart
+      </Text>
 
       {cartItems.length === 0 ? (
         <Text>Your cart is empty</Text>
@@ -88,19 +98,23 @@ function Cart() {
                 </VStack>
               </HStack>
 
-              <HStack spacing={4} justifyContent="center" mt={2}>
-                <Button colorScheme="blue" size="sm" onClick={() => decreaseQuantityHandler(item.id)}>
-                  -
-                </Button>
-                <Text fontSize="lg" fontWeight="600">Quantity: {item.quantity}</Text>
-                <Button colorScheme="blue" size="sm" onClick={() => increaseQuantityHandler(item)}>
-                  +
-                </Button>
-              </HStack>
+              {!paymentSuccessful && (
+                <HStack spacing={4} justifyContent="center" mt={2}>
+                  <Button colorScheme="blue" size="sm" onClick={() => decreaseQuantityHandler(item.id)}>
+                    -
+                  </Button>
+                  <Text fontSize="lg" fontWeight="600">Quantity: {item.quantity}</Text>
+                  <Button colorScheme="blue" size="sm" onClick={() => increaseQuantityHandler(item)}>
+                    +
+                  </Button>
+                </HStack>
+              )}
 
-              <Button colorScheme="red" size="sm" mt={2} onClick={() => removeItemHandler(item.id)}>
-                Remove from Cart
-              </Button>
+              {!paymentSuccessful && (
+                <Button colorScheme="red" size="sm" mt={2} onClick={() => removeItemHandler(item.id)}>
+                  Remove from Cart
+                </Button>
+              )}
             </Box>
           ))}
 
@@ -111,20 +125,29 @@ function Cart() {
             </Text>
           </Box>
 
-          {/* Buy Button */}
-          <HStack justifyContent={"center"}>
-            <Button
-              colorScheme="green"
-              size="lg"
-              mt={4}
-              onClick={handleBuy}
-              borderRadius="full"
-              width="50%"
-              _hover={{ bg: "#38A169", color: "white" }}
-            >
-              Proceed to Payment
-            </Button>
-          </HStack>
+          {!paymentSuccessful && (
+            <HStack justifyContent={"center"}>
+              <Button
+                colorScheme="green"
+                size="lg"
+                mt={4}
+                onClick={handleBuy}
+                borderRadius="full"
+                width="50%"
+                _hover={{ bg: "#38A169", color: "white" }}
+              >
+                Proceed to Payment
+              </Button>
+            </HStack>
+          )}
+
+          {paymentSuccessful && (
+            <Box mt={4}>
+              <Text fontSize="2xl" color="green.500">
+                Payment Successful! Thank you for your order.
+              </Text>
+            </Box>
+          )}
         </VStack>
       )}
     </Box>

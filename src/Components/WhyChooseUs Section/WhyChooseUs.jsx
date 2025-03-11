@@ -29,7 +29,7 @@ function WhyChooseUs() {
             textAlign={"center"}
             marginTop={"0.8rem"}
           >
-            Arcu do not hate euismod lacinia to follow the coaching elit, but I
+            Orange do not hate me to follow the coaching elit, but I
             do like this at the same time as it happened with some great work
             and pain.
           </Text>
@@ -66,7 +66,7 @@ function WhyChooseUs() {
               detailsImage={fresh}
               DetailsTitle={"Healthy Fresh Eatbales"}
               DetailsText={
-                "Arcu do not hate euismod lacinia to follow the coaching elit, but I do like this at the same time as it happened with some great work and pain."
+                "Arcu do not hate  to follow the coaching elit, but I do like this at the same time as it happened with some great work and pain."
               }
             />
 

@@ -11,7 +11,7 @@ function Section2() {
     <Box width={"100%"} minHeight={"50vh"} marginTop={"5rem"} justifyContent={'center'} alignItems={'center'} display={'flex'} overflow={"hidden"}>
       
       <HStack justifyContent={'center'} gap={"20px"} flexWrap={"wrap"}>
-        <Section2Card cardImage={Image1} CardSubHeading={'100% Healthy & Affordable'} cardTitle={'ORGANIC CITRUS FRUITS'} cardTitleColor={'#5EA98B'} />
+        {/* <Section2Card cardImage={Image1} CardSubHeading={'100% Healthy & Affordable'} cardTitle={'ORGANIC CITRUS FRUITS'} cardTitleColor={'#5EA98B'} /> */}
         
         <Section2Card  cardImage={Image2} CardSubHeading={'Natural Raw Vegtables'} cardTitle={'NEW GREENY VEGTABLES'} cardTitleColor={'white'} />
 
