@@ -14,6 +14,9 @@ import data from "../../assets/Data";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../../Redux/cartSlice";
+import { collection, addDoc} from "firebase/firestore";
+import { db } from "../../Firebase/Firebase"; 
+
 
 function Section3Cards() {
   const dispatch = useDispatch();
@@ -38,7 +41,7 @@ function Section3Cards() {
     });
   };
 
-  const addToCartHandler = (item) => {
+  const addToCartHandler = async (item) => {
     const isLoggedIn = sessionStorage.getItem("isLoggedIn");
 
     if (!isLoggedIn) {
@@ -49,18 +52,39 @@ function Section3Cards() {
       return; // Don't proceed with adding the item to the cart if the user is not logged in
     }
 
-    dispatch(
-      addToCart({
+    try {
+      // Add the cart item to the Firestore "cart" collection
+      const cartRef = collection(db, "items");
+      await addDoc(cartRef, {
         id: item.id,
         itemImage: item.itemImage,
         itemTitle: item.itemTitle,
         price: item.price,
-      })
-    );
+        quantity: 1, // Default quantity can be 1 or modify as needed
+      });
 
-    toast.success("Added to cart", {
-      position: "bottom-center", // Set the position to bottom-center
-    });
+      console.log("Cart item added successfully");
+      toast.success("Item added to cart!", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+
+      // Dispatch Redux action to update the cart state
+      dispatch(
+        addToCart({
+          id: item.id,
+          itemImage: item.itemImage,
+          itemTitle: item.itemTitle,
+          price: item.price,
+        })
+      );
+    } catch (error) {
+      console.error("Error adding item to cart:", error);
+      toast.error("Failed to add item to cart.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+    }
   };
 
   return (

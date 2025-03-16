@@ -5,7 +5,7 @@ import { db, auth } from "./Firebase"; // Assuming you've exported db and auth f
 // Save cart to Firebase Firestore
 export const saveCartToFirebase = async (cartItems) => {
   if (auth.currentUser) {
-    const cartRef = db.collection('users').doc(auth.currentUser.uid).collection('cart');
+    const cartRef = db.collection('users').doc(auth.currentUser.uid).collection('cartItems');
     try {
       // Clear the current cart before saving new items
       await cartRef.get().then(snapshot => {
@@ -25,7 +25,7 @@ export const saveCartToFirebase = async (cartItems) => {
 // Get cart from Firestore
 export const getCartFromFirebase = async () => {
   if (auth.currentUser) {
-    const cartRef = db.collection('users').doc(auth.currentUser.uid).collection('cart');
+    const cartRef = db.collection('users').doc(auth.currentUser.uid).collection('cartItems');
     const cartSnapshot = await cartRef.get();
     const cartData = cartSnapshot.docs.map(doc => doc.data());
     return cartData;

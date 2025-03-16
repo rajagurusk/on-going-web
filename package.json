@@ -27,6 +27,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.21.1",
     "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0",
     "responsive": "^2.0.0",
     "swiper": "^11.0.5"
   },

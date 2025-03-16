@@ -5,6 +5,15 @@ import React, { useState } from "react";
 function Section2Card({cardImage , CardSubHeading, cardTitle , cardTitleColor}) {
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleScroll = () => {
+    // Scroll the page down by 500px (you can adjust this value)
+    window.scrollBy({
+      top: 500, // Scroll down by 500px
+      behavior: 'smooth' // Smooth scroll
+    });
+  };
+
+
   return (
     <Box width={["80%", "80%", "80%", "28rem"]} height={["5%", "5%", "5%", "18rem"]}   borderRadius={"100px"}>
 
@@ -68,6 +77,9 @@ function Section2Card({cardImage , CardSubHeading, cardTitle , cardTitleColor}) 
         onMouseLeave={() => setIsHovered(false)}
         fontSize={['10px' , '12px' , '16px']}
         
+        onClick={() => handleScroll()} // ✅ Navigate to /shop
+
+
           >
             SHOP NOW
           </Text>

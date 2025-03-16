@@ -51,6 +51,7 @@ function SignUpSection() {
 
   const handleSignUp = async (e) => {
     e.preventDefault(); // Prevent page reload on form submit
+    console.log("Address entered:", address);
 
     if (!validateInputs()) {
       return; // Stop signup if validation fails
@@ -281,11 +282,11 @@ function SignUpSection() {
           </HStack>
 
           {/* Divider */}
-          <HStack
+          {/* <HStack
             width={'70%'}
             height={'5px'}
             bg={'#FEEDE5'}
-          ></HStack>
+          ></HStack> */}
 
           {/* Button Links */}
           <HStack

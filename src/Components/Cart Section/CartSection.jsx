@@ -17,6 +17,18 @@ function Cart() {
   const [paymentInProgress, setPaymentInProgress] = useState(false);
   const toast = useToast();
 
+// Reset cart state on logout
+const handleLogout = () => {
+  // Reset Redux cart state
+  dispatch(setCart([])); // Assuming `setCart` resets the cart to an empty array
+  // Optionally reset local state if you are using `useState`
+  setCart([]);
+  // Clear cart from localStorage if necessary
+  localStorage.removeItem("cart"); // Optional, if cart is stored in localStorage
+  // Other logout logic like updating auth state, etc.
+};
+
+
   useEffect(() => {
     const fetchCart = async () => {
       if (auth.currentUser) {
@@ -107,9 +119,9 @@ function Cart() {
         await saveCartToFirebase(updatedCart);
       },
       prefill: {
-        name: "John Doe",
-        email: "johndoe@example.com",
-        contact: "9999999999",
+        name: "Rajaguru Sivakumar",
+        email: "rajagurusivakumar@example.com",
+        contact: "9082512315",
       },
       theme: {
         color: "#38A169",

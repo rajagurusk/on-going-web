@@ -6,6 +6,13 @@ import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 function Hero() {
   const navigate = useNavigate(); // ✅ Hook for navigation
 
+  const handleScroll = () => {
+    // Scroll the page down by 500px (you can adjust this value)
+    window.scrollBy({
+      top: 1500, // Scroll down by 500px
+      behavior: 'smooth' // Smooth scroll
+    });
+  };
 
   return (
     <Box
@@ -77,7 +84,7 @@ function Hero() {
               border: "1px solid black",
               color: "black",
             }}
-            onClick={() => navigate("/shop")} // ✅ Navigate to /shop
+            onClick={() => handleScroll()} // ✅ Navigate to /shop
 
           >
             Shop Now

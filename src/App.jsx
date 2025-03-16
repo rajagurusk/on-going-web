@@ -21,11 +21,16 @@ import SearchBox from "./Components/Navbar/SearchBox";
 import Cart from "./Pages/Cart";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
-import store from "./Redux/store";
+// import store from "./Redux/store";
+import { store, persistor } from "./Redux/store";
 import { Provider } from "react-redux";
 import Map from "./Components/Map/Map";
 import Hero from "./Components/Hero Section/Hero";
 import ShopPage from "./Components/Hero Section/ShopPage";
+import { PersistGate } from "redux-persist/integration/react"; // Import PersistGate
+
+import AdminLoginPage from './Components/MyAccount Section/AdminLoginPage'; // Make sure path is correct
+// import AdminDashboard from "./Components/MyAccount Section/AdminDashboard"; // Import your Admin Dashboard page
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,41 +49,48 @@ function App() {
   return (
     <>
       <Provider store={store}>
-        <ChakraProvider>
-          <BrowserRouter>
-            {/* ✅ Pass products to Navbar */}
-            <Navbar
-              isLoggedIn={isLoggedIn}
-              setIsLoggedIn={setIsLoggedIn}
-              products={products}
-            />
+        <PersistGate loading={null} persistor={persistor}>
+          <ChakraProvider>
+            <BrowserRouter>
+              {/* ✅ Pass products to Navbar */}
+              <Navbar
+                isLoggedIn={isLoggedIn}
+                setIsLoggedIn={setIsLoggedIn}
+                products={products}
+              />
 
-            <Routes>
-              {/* <Route path="/" element={<Layout />} /> */}
-              <Route path="/" element={<Home />} />
-              {/* <Route path="/shop" element={<Shop />} /> */}
-              <Route path="/organic-fruits" element={<OrganicFruits />} />
-              <Route path="/aggregate-fruits" element={<AggregrateFruits />} />
-              <Route path="/pits-fruits" element={<PitsFruits />} />
-              <Route path="/legumas-fruits" element={<LegumasFruits />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/faq" element={<Faq />} />
-              <Route path="/my-account" element={<MyAccount />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/map" element={<Map></Map>} />
-              <Route path="/forgetPassword" element={<ForgetPassword />} />
-              <Route path="/signUp" element={<SignUp />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/favourite" element={<Favourite />} />
-              <Route path="/searchbox" element={<SearchBox />} />
-              <Route path="/" element={<Hero />} />
-              <Route path="/shop" element={<ShopPage />} />
-            </Routes>
-            <Toaster />
-            <Footer />
-          </BrowserRouter>
-        </ChakraProvider>
+              <Routes>
+                {/* <Route path="/" element={<Layout />} /> */}
+                <Route path="/" element={<Home />} />
+                {/* <Route path="/shop" element={<Shop />} /> */}
+                <Route path="/organic-fruits" element={<OrganicFruits />} />
+                <Route
+                  path="/aggregate-fruits"
+                  element={<AggregrateFruits />}
+                />
+                <Route path="/pits-fruits" element={<PitsFruits />} />
+                <Route path="/legumas-fruits" element={<LegumasFruits />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/my-account" element={<MyAccount />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/map" element={<Map></Map>} />
+                <Route path="/forgetPassword" element={<ForgetPassword />} />
+                <Route path="/signUp" element={<SignUp />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/favourite" element={<Favourite />} />
+                <Route path="/searchbox" element={<SearchBox />} />
+                <Route path="/" element={<Hero />} />
+                <Route path="/shop" element={<ShopPage />} />
+                <Route path="/admin" element={<AdminLoginPage />} />
+                {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
+              </Routes>
+              <Toaster />
+              <Footer />
+            </BrowserRouter>
+          </ChakraProvider>
+        </PersistGate>
       </Provider>
     </>
   );

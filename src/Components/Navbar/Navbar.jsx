@@ -1,4 +1,4 @@
-import { Box, Container, HStack, Image ,Text , Button} from "@chakra-ui/react";
+import { Box, Container, HStack, Image, Text, Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import ShopLink from "./ShopLink";
 import PagesLink from "./PagesLink";
@@ -9,31 +9,37 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }) {
+  const cartLength = useSelector((state) => state.cart.cartItems.length);
 
-    const cartLength = useSelector((state) => state.cart.cartItems.length);
-    
-  
   const [isSticky, setIsSticky] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
 
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const products = ["Watermelon", "Tomato", "Mushroom", "Broccoli", "Corn", "Asparagus", "Onion"];
-
+  const products = [
+    "Watermelon",
+    "Tomato",
+    "Mushroom",
+    "Broccoli",
+    "Corn",
+    "Asparagus",
+    "Onion",
+  ];
 
   useEffect(() => {
     // This effect runs once when the component mounts
     const storedName = sessionStorage.getItem("userFirstName");
     // const loggedInStatus = sessionStorage.getItem("isLoggedIn") === "true";
 
-    
     if (storedName) {
       setUserFirstName(storedName);
       // setIsLoggedIn(true);
 
-
       // console.log(userFirstName , "-->")
     }
   }, []); // Empty dependency array ensures this runs once
+
+  
+
 
   const handleLogout = () => {
     sessionStorage.removeItem("userFirstName");
@@ -41,9 +47,15 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
     setUserFirstName("");
     setIsLoggedIn(false);
     window.location.reload(); // Refresh page after logout
+
+    sessionStorage.removeItem("userFirstName");
+    sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.removeItem("isAdmin");  // Remove admin session
+    setUserFirstName("");
+    setIsLoggedIn(false);
+    window.location.reload(); // Refresh page after logout
+  
   };
-
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -86,28 +98,31 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
         alignItems={"center"}
         gap={["10px", "10px", "10px", "30px"]}
       >
-        {/* Nav LInks */}
-        <HStack
-          className="navLinks"
-          width={"40%"}
-          height={"100%"}
-          justifyContent={"space-around"}
-          alignItems={"center"}
-          gap={"30px"}
-          fontWeight={"500"}
-        >
-          <Link
-            className="hover:text-[#5EC49D] transition-all duration-150 ease"
-            to={"/"}
-          >
-            HOME
-          </Link>
-          {/* <ShopLink /> */}
-          <PagesLink />
-          <Link to={"/contact"}>CONTACT</Link>
-          <Link to={"/map"}>MAP</Link>
-
-        </HStack>
+        {/* Dynamic Nav Links based on User Type */}
+<HStack
+  className="navLinks"
+  width={"40%"}
+  height={"100%"}
+  justifyContent={"space-around"}
+  alignItems={"center"}
+  gap={"30px"}
+  fontWeight={"500"}
+>
+  {sessionStorage.getItem("isAdmin") === "true" ? (
+    <>
+      <Link to={"/admin/orders"}>View Orders</Link>
+      <Link to={"/admin/products"}>Products</Link>
+      <Link to={"/admin/customer-proof"}>Customer Proof</Link>
+    </>
+  ) : (
+    <>
+      <Link to={"/"}>HOME</Link>
+      <PagesLink />
+      <Link to={"/contact"}>CONTACT</Link>
+      <Link to={"/map"}>MAP</Link>
+    </>
+  )}
+</HStack>
 
         <HStack
           className="drawer-icon"
@@ -117,7 +132,6 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
           <DrawerMenu />
         </HStack>
 
-        
         {/* Right Links */}
         <HStack
           width={["90%", "70%", "70%", "40%"]}
@@ -128,7 +142,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
           padding={"0 20px"}
           gap={"30px"}
         >
-          <SearchBox products={products}/>
+          <SearchBox products={products} />
 
           {/* Cart */}
           <Link>
@@ -143,7 +157,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               borderRadius={"50%"}
             >
               <Link to={"/Cart"}>
-              <i className="ri-shopping-bag-2-line text-2xl text-[#5EC49D] "></i>
+                <i className="ri-shopping-bag-2-line text-2xl text-[#5EC49D] "></i>
               </Link>
               <Box
                 className="group"
@@ -164,15 +178,15 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
             </Container>
           </Link>
 
-           {/* User Section */}
-           <HStack>
+          {/* User Section */}
+          <HStack>
             {userFirstName ? (
               <>
                 <Text fontSize={"18px"} color="#5EC49D">
                   {userFirstName}
                 </Text>
                 <Button
-                  onClick={handleLogout} 
+                  onClick={handleLogout}
                   colorScheme="red"
                   size="sm"
                   ml={2} // Adds some spacing
@@ -185,7 +199,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
                 <i className="ri-user-3-line text-2xl text-[#5EC49D] hover:text-[#451D1D] font-medium"></i>
               </Link>
             )}
-         </HStack>
+          </HStack>
         </HStack>
       </HStack>
     </Box>
