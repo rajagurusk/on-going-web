@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  cartItems: [],
+};
+
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -38,8 +43,14 @@ const cartSlice = createSlice({
         state.cartItems = state.cartItems.filter((item) => item.id !== itemId);
       }
     },
+    clearCart: (state) => {
+      state.cartItems = [];
+    },
+    setCart: (state, action) => {
+      state.cartItems = action.payload; // ✅ Load Cart from Firebase
+    },
   },
 });
 
-export const { addToCart, removeFromCart ,decreaseQuantity } = cartSlice.actions;
+export const { addToCart, removeFromCart ,decreaseQuantity, clearCart, setCart  } = cartSlice.actions;
 export default cartSlice.reducer;

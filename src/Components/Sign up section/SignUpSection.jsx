@@ -6,10 +6,7 @@ import { setDoc, doc } from 'firebase/firestore';
 import { ToastContainer, toast } from 'react-toastify';
 import { getDoc } from 'firebase/firestore';
 
-
-
 function SignUpSection() {
-
 
   const [show, setShow] = React.useState(false)
 
@@ -17,11 +14,12 @@ function SignUpSection() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('');  // New state for address
 
   const [errors, setErrors] = useState({});
 
-
   const handleClick = () => setShow(!show)
+
   const validateInputs = () => {
     let newErrors = {};
 
@@ -44,10 +42,12 @@ function SignUpSection() {
       newErrors.password = "Password must be at least 6 characters, include 1 uppercase & 1 number";
     }
 
+    // Validate address (optional: you can make it required if necessary)
+    if (!address.trim()) newErrors.address = "Address is required"; // Optional validation for address
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Return true if no errors
   };
-
 
   const handleSignUp = async (e) => {
     e.preventDefault(); // Prevent page reload on form submit
@@ -55,7 +55,6 @@ function SignUpSection() {
     if (!validateInputs()) {
       return; // Stop signup if validation fails
     }
-
 
     try {
       // Manually create a user document in Firestore
@@ -71,11 +70,10 @@ function SignUpSection() {
           lname: lastName,
           email: email,
           password: password,  // It's still better not to store plain passwords
+          address: address,     // Save address to Firestore
         });
 
         console.log('User data saved in Firestore');
-
-        console.log('User signed up and data saved to Firestore');
         toast.success("User signed up successfully!", {
           position: "top-right",
           autoClose: 5000,
@@ -88,7 +86,7 @@ function SignUpSection() {
 
       } else {
         console.log('User already exists');
-        toast.error("Error User already exists", {
+        toast.error("Error: User already exists", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -97,8 +95,6 @@ function SignUpSection() {
           draggable: true,
           progress: undefined,
         });
-
-
       }
 
     } catch (error) {
@@ -112,20 +108,8 @@ function SignUpSection() {
         draggable: true,
         progress: undefined,
       });
-
     }
   };
-
-
-
-
-
-
-
-
-
-
-
 
   return (
     <Box
@@ -133,14 +117,11 @@ function SignUpSection() {
       height={"100%"}
       marginTop={"5rem"}
     >
-
       <VStack
         width={["90%", "90%", "90%", "50%"]}
         height={"100%"}
-        // backgroundColor={'red'}
         margin={"auto"}
       >
-
         <Text
           fontSize={["30px", "30px", "30px", "40px"]}
           fontWeight={"600"}
@@ -159,7 +140,6 @@ function SignUpSection() {
         <VStack
           width={"100%"}
           paddingBottom={"2rem"}
-          // height={"100%"}
           marginTop={"4rem"}
           justifyContent={"center"}
           alignItems={"center"}
@@ -188,7 +168,6 @@ function SignUpSection() {
               onChange={(e) => setFirstName(e.target.value)} // update state on change
             />
             {errors.firstName && <Text color="red.500" fontSize="sm">{errors.firstName}</Text>}
-
           </VStack>
 
           {/* Last Name */}
@@ -208,10 +187,8 @@ function SignUpSection() {
               _hover={{ bg: '#FEEDE5' }}
               value={lastName} // bind input value to state
               onChange={(e) => setLastName(e.target.value)} // update state on change
-
             />
             {errors.lastName && <Text color="red.500" fontSize="sm">{errors.lastName}</Text>}
-
           </VStack>
 
           {/* Email */}
@@ -231,12 +208,9 @@ function SignUpSection() {
               _hover={{ bg: '#FEEDE5' }}
               value={email} // bind input value to state
               onChange={(e) => setEmail(e.target.value)} // update state on change
-
             />
             {errors.email && <Text color="red.500" fontSize="sm">{errors.email}</Text>}
-
           </VStack>
-
 
           {/* Password */}
           <VStack
@@ -259,7 +233,6 @@ function SignUpSection() {
                 _hover={{ bg: '#FEEDE5' }}
                 value={password} // bind input value to state
                 onChange={(e) => setPassword(e.target.value)} // update state on change
-
               />
               <InputRightElement width='4.5rem'>
                 <Button bg="transparent" _hover={{ bg: '#5EA98B', color: 'white' }} borderRadius={'50px'} h='1.75rem' size='sm' onClick={handleClick}>
@@ -268,7 +241,27 @@ function SignUpSection() {
               </InputRightElement>
             </InputGroup>
             {errors.password && <Text color="red.500" fontSize="sm">{errors.password}</Text>}
+          </VStack>
 
+          {/* Address */}
+          <VStack
+            width={"70%"}
+            alignItems={"flex-start"}
+            gap={"1rem"}
+          >
+            <Text fontWeight={"600"} fontSize={'18px'}>Address</Text>
+            <Input
+              placeholder='Enter Address'
+              variant={"filled"}
+              bg={'#FEEDE5'}
+              borderRadius={"50px"}
+              width={"100%"}
+              outline={"none"}
+              _hover={{ bg: '#FEEDE5' }}
+              value={address} // bind input value to state
+              onChange={(e) => setAddress(e.target.value)} // update state on change
+            />
+            {errors.address && <Text color="red.500" fontSize="sm">{errors.address}</Text>}
           </VStack>
 
           {/* sign up Button */}
@@ -287,13 +280,11 @@ function SignUpSection() {
             >Sign Up</Button>
           </HStack>
 
-
           {/* Divider */}
           <HStack
             width={'70%'}
             height={'5px'}
             bg={'#FEEDE5'}
-
           ></HStack>
 
           {/* Button Links */}
@@ -305,13 +296,10 @@ function SignUpSection() {
             textAlign={"center"}
             flexWrap={["wrap", "wrap", 'wrap', 'wrap', "nowrap"]}
           >
-
-
             <Link
               to={"/"}
               className='hover:text-[#5EA98B] transition-all duration-150 ease font-medium'
             >Return to Store</Link>
-
           </HStack>
 
         </VStack>
@@ -319,10 +307,8 @@ function SignUpSection() {
       </VStack>
 
       <ToastContainer />
-
-
     </Box>
   )
 }
 
-export default SignUpSection
+export default SignUpSection;
