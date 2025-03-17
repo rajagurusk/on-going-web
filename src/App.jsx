@@ -28,8 +28,11 @@ import Map from "./Components/Map/Map";
 import Hero from "./Components/Hero Section/Hero";
 import ShopPage from "./Components/Hero Section/ShopPage";
 import { PersistGate } from "redux-persist/integration/react"; // Import PersistGate
+import 'react-toastify/dist/ReactToastify.css';
 
 import AdminLoginPage from './Components/MyAccount Section/AdminLoginPage'; // Make sure path is correct
+import AdminOrdersPage from "./Pages/AdminOrdersPage"; // Import the AdminOrdersPage component
+
 // import AdminDashboard from "./Components/MyAccount Section/AdminDashboard"; // Import your Admin Dashboard page
 
 function App() {
@@ -84,6 +87,8 @@ function App() {
                 <Route path="/" element={<Hero />} />
                 <Route path="/shop" element={<ShopPage />} />
                 <Route path="/admin" element={<AdminLoginPage />} />
+                <Route path="/admin/orders" element={<AdminOrdersPage />} /> {/* Route for Admin Orders Page */}
+
                 {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
               </Routes>
               <Toaster />

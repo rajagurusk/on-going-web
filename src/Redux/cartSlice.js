@@ -9,6 +9,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     cartItems: [],
+    cartItems:0,
   },
   reducers: {
     addToCart: (state, action) => {
@@ -45,6 +46,8 @@ const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.cartItems = [];
+      state.cartItemsCount = 0; // Reset the item count
+
     },
     setCart: (state, action) => {
       state.cartItems = action.payload; // ✅ Load Cart from Firebase

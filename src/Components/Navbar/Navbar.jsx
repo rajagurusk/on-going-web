@@ -99,30 +99,50 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
         gap={["10px", "10px", "10px", "30px"]}
       >
         {/* Dynamic Nav Links based on User Type */}
-<HStack
-  className="navLinks"
-  width={"40%"}
-  height={"100%"}
-  justifyContent={"space-around"}
-  alignItems={"center"}
-  gap={"30px"}
-  fontWeight={"500"}
->
-  {sessionStorage.getItem("isAdmin") === "true" ? (
-    <>
-      <Link to={"/admin/orders"}>View Orders</Link>
-      <Link to={"/admin/products"}>Products</Link>
-      <Link to={"/admin/customer-proof"}>Customer Proof</Link>
-    </>
-  ) : (
-    <>
-      <Link to={"/"}>HOME</Link>
-      <PagesLink />
-      <Link to={"/contact"}>CONTACT</Link>
-      <Link to={"/map"}>MAP</Link>
-    </>
-  )}
-</HStack>
+        <HStack
+          className="navLinks"
+          width={"40%"}
+          height={"100%"}
+          justifyContent={"space-around"}
+          alignItems={"center"}
+          gap={"30px"}
+          fontWeight={"500"}
+        >
+          {sessionStorage.getItem("isAdmin") === "true" ? (
+            <>
+              <Link
+                className="hover:text-[#5EC49D] transition-all duration-150 ease"
+                to="/admin/orders" // Ensure this is the correct path to view the orders
+              >
+                View Orders
+              </Link>
+              <Link
+                className="hover:text-[#5EC49D] transition-all duration-150 ease"
+                to={"/admin/products"}
+              >
+                Products
+              </Link>
+              <Link
+                className="hover:text-[#5EC49D] transition-all duration-150 ease"
+                to={"/admin/customer-proof"}
+              >
+                Customer Proof
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                className="hover:text-[#5EC49D] transition-all duration-150 ease"
+                to={"/"}
+              >
+                HOME
+              </Link>
+              <PagesLink />
+              <Link to={"/contact"}>CONTACT</Link>
+              <Link to={"/map"}>MAP</Link>
+            </>
+          )}
+        </HStack>
 
         <HStack
           className="drawer-icon"
