@@ -140,6 +140,8 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               <PagesLink />
               <Link to={"/contact"}>CONTACT</Link>
               <Link to={"/map"}>MAP</Link>
+
+              <Link to={"/orders"}>Orders</Link>
             </>
           )}
         </HStack>

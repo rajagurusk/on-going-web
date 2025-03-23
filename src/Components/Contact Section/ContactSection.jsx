@@ -191,26 +191,6 @@ function ContactSection() {
             {errors.phone && <Text color="red.500">{errors.phone}</Text>}
           </VStack>
 
-          {/* Message
-        <VStack 
-        width={['90%' , '90%' , '90%' , '70%']}
-        
-        alignItems={'flex-start'} gap={'1rem'}>
-          <Text fontWeight={'600'} fontSize={'18px'}>
-            Message
-          </Text>
-          <Textarea
-            placeholder="Message"
-            variant={'filled'}
-            bg={'#FEEDE5'}
-            borderRadius={'20px'}
-            width={'100%'}
-            outline={'none'}
-            _hover={{ bg: '#FEEDE5' }}
-          />
-        </VStack>
-         */}
-
           {/* Buttons */}
           <HStack
             width={["90%", "90%", "90%", "70%"]}

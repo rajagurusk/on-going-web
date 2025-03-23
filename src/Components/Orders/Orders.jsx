@@ -1,44 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, VStack, HStack, Spinner } from "@chakra-ui/react";
-import { db } from "../Firebase/Firebase"; // Correct path to Firebase config
-import { collection, getDocs } from "firebase/firestore";
+import { Box, Text, VStack, Button, HStack, Spinner } from "@chakra-ui/react";
+import { db } from "../../Firebase/Firebase"; // go up 1 level to src/Components
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
-function AdminOrders() {
+function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userEmail = sessionStorage.getItem("userEmail"); // Get user email from sessionStorage
 
   useEffect(() => {
-    const fetchAllOrders = async () => {
+    const fetchOrders = async () => {
       try {
-        const ordersCollection = collection(db, "orders"); // Get all user orders from "orders" collection
-        const querySnapshot = await getDocs(ordersCollection);
-        const allOrders = [];
+        const orderRef = doc(db, "orders", userEmail); // Reference to the orders document using user email
+        const orderSnapshot = await getDoc(orderRef);
 
-        querySnapshot.forEach((doc) => {
-          console.log(doc.id, doc.data()); // Log to see the fetched data
-          const userOrders = doc.data().orders; // Get the orders array for each user
-          userOrders.forEach((order) => {
-            allOrders.push({ ...order, userEmail: doc.id }); // Add userEmail to each order
-          });
-        });
-
-        console.log(allOrders); // Log all orders before setting the state
-        setOrders(allOrders); // Set all orders in state
+        if (orderSnapshot.exists()) {
+          setOrders(orderSnapshot.data().orders || []); // Set orders if they exist
+        } else {
+          setOrders([]); // If no orders found, set an empty array
+        }
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
-        setLoading(false); // Stop loading after data is fetched
+        setLoading(false); // Set loading to false after fetching is complete
       }
     };
 
-    fetchAllOrders(); // Call function to fetch all orders
-  }, []);
+    fetchOrders(); // Call the function to fetch orders
+  }, [userEmail]); // Re-run when userEmail changes
 
   if (loading) {
     return (
       <Box p={5} textAlign="center">
         <Spinner size="xl" />
-        <Text mt={4}>Loading orders...</Text>
+        <Text mt={4}>Loading your orders...</Text>
       </Box>
     );
   }
@@ -46,16 +41,16 @@ function AdminOrders() {
   return (
     <Box p={5} textAlign="center">
       <Text fontSize="2xl" fontWeight="bold">
-        All User Orders
+        Your Orders
       </Text>
 
       {orders.length === 0 ? (
         <Text>No orders found!</Text>
       ) : (
         <VStack spacing={4} align="normal">
-          {orders.map((order, index) => (
+          {orders.map((order) => (
             <Box
-              key={index}
+              key={order.id}
               p={4}
               borderWidth="1px"
               borderRadius="md"
@@ -69,7 +64,6 @@ function AdminOrders() {
               <Text fontSize="lg" fontWeight="600" mt={2}>
                 Total: Rs. {order.totalAmount}
               </Text>
-              <Text mt={2}>User Email: {order.userEmail}</Text>
 
               <VStack spacing={2} mt={4} align="start">
                 <Text fontWeight="bold">Items:</Text>
@@ -89,4 +83,4 @@ function AdminOrders() {
   );
 }
 
-export default AdminOrders;
+export default Orders;

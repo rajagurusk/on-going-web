@@ -1,156 +1,111 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Text, VStack, Image, Button, HStack, useToast } from "@chakra-ui/react";
+import { Box, Text, VStack, Image, Button, HStack } from "@chakra-ui/react";
 import {
   removeFromCart,
   decreaseQuantity,
   addToCart,
-  setCart,
+  clearCart,
+  addOrder,
 } from "../../Redux/cartSlice";
-import { saveCartToFirebase, getCartFromFirebase } from "../../Firebase/cartUtils";
-import { auth } from "../../Firebase/Firebase";
+import { db } from "../../Firebase/Firebase"; // go up 1 level to src/Components
+// import { doc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 function Cart() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const [paymentSuccessful, setPaymentSuccessful] = useState(false);
-  const [paymentInProgress, setPaymentInProgress] = useState(false);
-  const toast = useToast();
-
-// Reset cart state on logout
-const handleLogout = () => {
-  // Reset Redux cart state
-  dispatch(setCart([])); // Assuming `setCart` resets the cart to an empty array
-  // Optionally reset local state if you are using `useState`
-  setCart([]);
-  // Clear cart from localStorage if necessary
-  localStorage.removeItem("cart"); // Optional, if cart is stored in localStorage
-  // Other logout logic like updating auth state, etc.
-};
-
-
-  useEffect(() => {
-    const fetchCart = async () => {
-      if (auth.currentUser) {
-        const savedCart = await getCartFromFirebase();
-        dispatch(setCart(savedCart));
-      }
-    };
-
-    fetchCart();
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (auth.currentUser) {
-      saveCartToFirebase(cartItems);
-    }
-  }, [cartItems]);
+  const userEmail = sessionStorage.getItem("userEmail"); // Get user email from sessionStorage
 
   const removeItemHandler = (itemId) => {
-    if (!paymentSuccessful) {
-      dispatch(removeFromCart(itemId));
-    }
+    dispatch(removeFromCart(itemId));
   };
 
+  // Increase item quantity handler
   const increaseQuantityHandler = (item) => {
-    if (!paymentSuccessful) {
-      dispatch(
-        addToCart({
-          id: item.id,
-          itemImage: item.itemImage,
-          itemTitle: item.itemTitle,
-          price: item.price,
-        })
-      );
-    }
+    dispatch(
+      addToCart({
+        id: item.id,
+        itemImage: item.itemImage,
+        itemTitle: item.itemTitle,
+        price: item.price,
+      })
+    );
   };
 
+  // Decrease item quantity handler
   const decreaseQuantityHandler = (itemId) => {
-    if (!paymentSuccessful) {
-      dispatch(decreaseQuantity(itemId));
-    }
+    dispatch(decreaseQuantity(itemId));
   };
 
+  // ✅ Function to Handle Razorpay Payment
   const handleBuy = async () => {
     if (cartItems.length === 0) {
-      toast({
-        title: "Cart is Empty",
-        description: "Please add items to your cart before proceeding.",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
+      alert("Your cart is empty!");
       return;
     }
 
     const totalAmount = cartItems.reduce(
-      (total, item) => (item.paid ? total : total + item.price * item.quantity),
+      (total, item) => total + item.price * item.quantity,
       0
     );
 
-    const options = {
-      key: "rzp_test_LVeCURdS7yVtg4", // Store API Key in .env
-      amount: totalAmount * 100, // Convert to paisa (INR)
-      currency: "INR",
-      name: "DharaviVegShop",
-      description: "Order Payment",
-      handler: async function (response) {
-        toast({
-          title: "Payment Successful!",
-          description: `Payment ID: ${response.razorpay_payment_id}`,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-
-        // Mark payment as successful and update cart items to "paid"
-        setPaymentSuccessful(true);
-        setPaymentInProgress(false);
-
-        // Update the cart items to reflect "paid" status, without clearing the cart
-        const updatedCart = cartItems.map((item) => ({
-          ...item,
-          paid: true, // Add paid property to the item
-          orderStatus: "Ordered", // Add orderStatus property
-        }));
-        dispatch(setCart(updatedCart)); // Update cart in Redux
-
-        // Optionally save the updated cart to Firebase if required
-        await saveCartToFirebase(updatedCart);
-      },
-      prefill: {
-        name: "Rajaguru Sivakumar",
-        email: "rajagurusivakumar@example.com",
-        contact: "9082512315",
-      },
-      theme: {
-        color: "#38A169",
-      },
+    const orderDetails = {
+      id: new Date().getTime(), // Unique order ID
+      items: [...cartItems], // Store purchased items
+      totalAmount: totalAmount,
+      date: new Date().toLocaleString(), // Timestamp
     };
 
-    setPaymentInProgress(true); // Start payment in progress state
+    // Store order in Firebase
+    try {
+      const orderRef = doc(db, "orders", userEmail); // Use email as the document ID
+      const orderSnapshot = await getDoc(orderRef);
+      let orders = [];
 
-    const razorpay = new window.Razorpay(options);
-    razorpay.open();
-  };
+      if (orderSnapshot.exists()) {
+        orders = orderSnapshot.data().orders || []; // Fetch existing orders
+      }
 
-  const renderOrderStatus = (status) => {
-    const statusOrder = ["Ordered", "Shipped", "Delivered"];
-    const statusIndex = statusOrder.indexOf(status);
-    return (
-      <HStack spacing={2} justify="center" align="center">
-        {statusOrder.map((s, idx) => (
-          <HStack key={s} spacing={1} align="center">
-            <Text color={idx <= statusIndex ? "green.500" : "gray.400"} fontWeight="bold">
-              {s}
-            </Text>
-            {idx < statusOrder.length - 1 && (
-              <Box as="span" borderBottom="2px" borderColor={idx < statusIndex ? "green.500" : "gray.300"} width="30px"></Box>
-            )}
-          </HStack>
-        ))}
-      </HStack>
-    );
+      // Add the new order to the existing list
+      orders.push(orderDetails);
+
+      // Save the updated order list back to Firestore
+      await setDoc(orderRef, { orders });
+
+      // Clear cart after successful payment
+      dispatch(clearCart());
+      alert("Order placed successfully!");
+
+      // Proceed to Razorpay payment
+      const options = {
+        key: "rzp_test_LVeCURdS7yVtg4", // Store API Key in .env
+        amount: totalAmount * 100, // Convert amount to paisa (INR)
+        currency: "INR",
+        name: "DharaviVegShop",
+        description: "Order Payment",
+        handler: function (response) {
+          alert(
+            "Payment Successful! Payment ID: " + response.razorpay_payment_id
+          );
+          dispatch(addOrder(orderDetails)); // Store order in Redux
+        },
+        prefill: {
+          name: "John Doe",
+          email: userEmail, // Use logged-in user's email
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#38A169",
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Error saving order:", error.message);
+      alert("Error saving order. Please try again later.");
+    }
   };
 
   return (
@@ -164,7 +119,13 @@ const handleLogout = () => {
       ) : (
         <VStack spacing={4} align="normal">
           {cartItems.map((item) => (
-            <Box key={item.id} p={4} borderWidth="1px" borderRadius="md" boxShadow="md">
+            <Box
+              key={item.id}
+              p={4}
+              borderWidth="1px"
+              borderRadius="md"
+              boxShadow="md"
+            >
               <HStack spacing={4}>
                 <Image src={item.itemImage} boxSize="120px" borderRadius="md" />
                 <VStack align="start" spacing={2}>
@@ -172,96 +133,71 @@ const handleLogout = () => {
                   <Text>Price: Rs. {item.price}</Text>
                   <Text>Quantity: {item.quantity}</Text>
                 </VStack>
-
-                {/* Display "Paid" Text on the Right Side */}
-                {item.paid && (
-                  <Box flex="1" textAlign="right">
-                    <Text color="green.500" fontWeight="bold">
-                      Paid
-                    </Text>
-                  </Box>
-                )}
               </HStack>
 
-              {item.paid && renderOrderStatus(item.orderStatus)} {/* Display order status */}
-
-              {!item.paid && (
-                <HStack spacing={4} justifyContent="center" mt={2}>
-                  <Button
-                    colorScheme="blue"
-                    size="sm"
-                    onClick={() => decreaseQuantityHandler(item.id)}
-                  >
-                    -
-                  </Button>
-                  <Text fontSize="lg" fontWeight="600">
-                    Quantity: {item.quantity}
-                  </Text>
-                  <Button
-                    colorScheme="blue"
-                    size="sm"
-                    onClick={() => increaseQuantityHandler(item)}
-                  >
-                    +
-                  </Button>
-                </HStack>
-              )}
-
-              {!item.paid && (
+              <HStack spacing={4} justifyContent="center" mt={2}>
                 <Button
-                  colorScheme="red"
+                  colorScheme="blue"
                   size="sm"
-                  mt={2}
-                  onClick={() => removeItemHandler(item.id)}
+                  onClick={() => decreaseQuantityHandler(item.id)}
                 >
-                  Remove from Cart
+                  -
                 </Button>
-              )}
+                <Text fontSize="lg" fontWeight="600">
+                  Quantity: {item.quantity}
+                </Text>
+                <Button
+                  colorScheme="blue"
+                  size="sm"
+                  onClick={() => increaseQuantityHandler(item)}
+                >
+                  +
+                </Button>
+              </HStack>
+
+              <Button
+                colorScheme="red"
+                size="sm"
+                mt={2}
+                onClick={() => removeItemHandler(item.id)}
+              >
+                Remove from Cart
+              </Button>
             </Box>
           ))}
 
-          {/* Total Price - This will be hidden after payment */}
-          {!paymentSuccessful && (
-            <Box mt={4} p={4} borderWidth="1px" borderRadius="md" bg="#F7F7F7" boxShadow="sm">
-              <Text fontSize="xl" fontWeight="600">
-                Total: Rs.{" "}
-                {cartItems.reduce(
-                  (total, item) => (item.paid ? total : total + item.price * item.quantity),
-                  0
-                )}
-              </Text>
-            </Box>
-          )}
-
-          {!paymentSuccessful && !paymentInProgress && (
-            <HStack justifyContent={"center"}>
-              <Button
-                colorScheme="green"
-                size="lg"
-                mt={4}
-                onClick={handleBuy}
-                borderRadius="full"
-                width="50%"
-                _hover={{ bg: "#38A169", color: "white" }}
-              >
-                Proceed to Payment
-              </Button>
-            </HStack>
-          )}
-
-          {paymentInProgress && (
-            <Text mt={4} fontSize="xl" color="orange.500">
-              Payment in progress... Please wait.
+          {/* Total Price */}
+          <Box
+            mt={4}
+            p={4}
+            borderWidth="1px"
+            borderRadius="md"
+            bg="#F7F7F7"
+            boxShadow="sm"
+          >
+            <Text fontSize="xl" fontWeight="600">
+              Total: Rs.{" "}
+              {cartItems.reduce(
+                (total, item) => total + item.price * item.quantity,
+                0
+              )}
             </Text>
-          )}
+          </Box>
 
-          {paymentSuccessful && (
-            <Box mt={4}>
-              <Text fontSize="2xl" color="green.500">
-                Payment Successful! Thank you for your order.
-              </Text>
-            </Box>
-          )}
+          {/* Buy Button */}
+          <HStack justifyContent={"center"}>
+            <Button
+              colorScheme="green"
+              size="lg"
+              mt={4}
+              onClick={handleBuy}
+              borderRadius="full"
+              width="50%"
+              _hover={{ bg: "#38A169", color: "white" }}
+            >
+              Proceed to Payment
+            </Button>
+          </HStack>
         </VStack>
       )}
     </Box>

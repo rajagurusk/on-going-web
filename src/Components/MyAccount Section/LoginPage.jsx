@@ -15,8 +15,12 @@ import { ToastContainer, toast } from "react-toastify";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { db } from "../../Firebase/Firebase"; // go up 1 level to src/Components
 import { useNavigate } from "react-router-dom";
+// import { clearOrders } from './path/to/cartSlice'; // Adjust the path
+import { clearOrders } from "../../Redux/cartSlice";
+import { useDispatch } from "react-redux";
 
 function LoginPage() {
+  const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,8 +77,21 @@ function LoginPage() {
           sessionStorage.setItem("isLoggedIn", "true"); // Set login status
 
           // setUserFirstName(userData.firstName);  // Store the first name
-          console.log("User logged in successfully:", userData);
+          // console.log("User logged in successfully:", userData);
           sessionStorage.setItem("userFirstName", userData.fname);
+
+          sessionStorage.setItem("userEmail", email); // Set email after successful login
+
+          // // Fetch the orders from Firestore
+          // const ordersRef = doc(db, "orders", email); // Assuming orders are stored under the email
+          // const ordersSnapshot = await getDoc(ordersRef);
+
+          // if (ordersSnapshot.exists()) {
+          //   const userOrders = ordersSnapshot.data().orders; // Assuming orders are stored as an array
+          //   dispatch(setUserOrders(userOrders)); // Store orders in Redux
+          // } else {
+          //   dispatch(setUserOrders([])); // If no orders, set empty array
+          // }
 
           toast.success("User logged in successfully!", {
             position: "top-right",
@@ -86,6 +103,7 @@ function LoginPage() {
             progress: undefined,
           });
 
+          // window.location.reload(); // Refresh page after login
           // Redirect to another page after login, for example, a dashboard
           navigate("/");
         } else {
