@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, VStack, Button, HStack, Spinner } from "@chakra-ui/react";
-import { db } from "../../Firebase/Firebase"; // go up 1 level to src/Components
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { Box, Text, VStack, HStack, Spinner, Badge } from "@chakra-ui/react";
+import { db } from "../../Firebase/Firebase"; // Ensure correct Firebase path
+import { doc, getDoc } from "firebase/firestore";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -11,23 +11,28 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const orderRef = doc(db, "orders", userEmail); // Reference to the orders document using user email
+        if (!userEmail) {
+          setLoading(false);
+          return;
+        }
+
+        const orderRef = doc(db, "orders", userEmail);
         const orderSnapshot = await getDoc(orderRef);
 
         if (orderSnapshot.exists()) {
-          setOrders(orderSnapshot.data().orders || []); // Set orders if they exist
+          setOrders(orderSnapshot.data().orders || []);
         } else {
-          setOrders([]); // If no orders found, set an empty array
+          setOrders([]);
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
-        setLoading(false); // Set loading to false after fetching is complete
+        setLoading(false);
       }
     };
 
-    fetchOrders(); // Call the function to fetch orders
-  }, [userEmail]); // Re-run when userEmail changes
+    fetchOrders();
+  }, [userEmail]);
 
   if (loading) {
     return (
@@ -64,6 +69,25 @@ function Orders() {
               <Text fontSize="lg" fontWeight="600" mt={2}>
                 Total: Rs. {order.totalAmount}
               </Text>
+
+              {/* Order Status with Color-Coded Badge */}
+              <HStack mt={2}>
+                <Text fontWeight="bold">Status:</Text>
+                <Badge
+                  colorScheme={
+                    order.status === "delivered"
+                      ? "green"
+                      : order.status === "shipped"
+                      ? "orange"
+                      : "blue"
+                  }
+                  fontSize="md"
+                  p={1}
+                  borderRadius="md"
+                >
+                  {order.status ? order.status.toUpperCase() : "ORDERED"}
+                </Badge>
+              </HStack>
 
               <VStack spacing={2} mt={4} align="start">
                 <Text fontWeight="bold">Items:</Text>

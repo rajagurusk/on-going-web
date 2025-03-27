@@ -1,38 +1,90 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, VStack, HStack, Spinner } from "@chakra-ui/react";
-import { db } from "../Firebase/Firebase"; // Correct path to Firebase config
-import { collection, getDocs } from "firebase/firestore";
+import { Box, Text, VStack, HStack, Spinner, Button, useToast } from "@chakra-ui/react";
+import { db } from "../Firebase/Firebase"; // Firebase config
+import { collection, getDocs, doc, getDoc, setDoc } from "firebase/firestore";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const fetchAllOrders = async () => {
       try {
-        const ordersCollection = collection(db, "orders"); // Get all user orders from "orders" collection
+        const ordersCollection = collection(db, "orders"); // Get all user orders
         const querySnapshot = await getDocs(ordersCollection);
         const allOrders = [];
 
-        querySnapshot.forEach((doc) => {
-          console.log(doc.id, doc.data()); // Log to see the fetched data
-          const userOrders = doc.data().orders; // Get the orders array for each user
-          userOrders.forEach((order) => {
-            allOrders.push({ ...order, userEmail: doc.id }); // Add userEmail to each order
-          });
-        });
+        for (const orderDoc of querySnapshot.docs) {
+          const userEmail = orderDoc.id;
+          const userOrders = orderDoc.data().orders || [];
 
-        console.log(allOrders); // Log all orders before setting the state
-        setOrders(allOrders); // Set all orders in state
+          // ✅ Fetch the registered address from "users" collection
+          const userRef = doc(db, "users", userEmail);
+          const userSnap = await getDoc(userRef);
+          const userAddress = userSnap.exists() ? userSnap.data().address || "No Address Provided" : "No Address Found";
+
+          console.log(userSnap.data()); // Log the user data to check address field
+
+
+          userOrders.forEach((order) => {
+            allOrders.push({ ...order, userEmail, userAddress }); // Add userAddress to order
+          });
+        }
+        
+
+        setOrders(allOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
-        setLoading(false); // Stop loading after data is fetched
+        setLoading(false);
       }
     };
 
-    fetchAllOrders(); // Call function to fetch all orders
+    fetchAllOrders();
   }, []);
+
+  // ✅ Function to update order status
+  const updateOrderStatus = async (orderId, userEmail, status) => {
+    try {
+      const orderRef = doc(db, "orders", userEmail);
+      const orderSnapshot = await getDoc(orderRef);
+
+      if (orderSnapshot.exists()) {
+        let updatedOrders = orderSnapshot.data().orders.map((order) =>
+          order.id === orderId ? { ...order, status } : order
+        );
+
+        await setDoc(orderRef, { orders: updatedOrders });
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.id === orderId && order.userEmail === userEmail
+              ? { ...order, status }
+              : order
+          )
+        );
+
+        toast({
+          title: `Order ${status.toUpperCase()}`,
+          description: `Order has been marked as ${status}.`,
+          status: status === "accepted" ? "success" : "error",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update order status. Try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -70,6 +122,11 @@ function AdminOrders() {
                 Total: Rs. {order.totalAmount}
               </Text>
               <Text mt={2}>User Email: {order.userEmail}</Text>
+              
+              {/* Displaying User's Address */}
+              <Text mt={2} fontWeight="bold">
+                Address: {order.userAddress}
+              </Text>
 
               <VStack spacing={2} mt={4} align="start">
                 <Text fontWeight="bold">Items:</Text>
@@ -81,6 +138,36 @@ function AdminOrders() {
                   </HStack>
                 ))}
               </VStack>
+
+              {/* ✅ Accept & Reject Buttons */}
+              <HStack spacing={4} mt={4} justifyContent="center">
+                <Button
+                  colorScheme="green"
+                  onClick={() => updateOrderStatus(order.id, order.userEmail, "accepted")}
+                  isDisabled={order.status === "accepted"}
+                >
+                  Accept
+                </Button>
+                <Button
+                  colorScheme="red"
+                  onClick={() => updateOrderStatus(order.id, order.userEmail, "rejected")}
+                  isDisabled={order.status === "rejected"}
+                >
+                  Reject
+                </Button>
+              </HStack>
+
+              {/* ✅ Show Status in Bold */}
+              {order.status && (
+                <Text
+                  fontSize="md"
+                  fontWeight="bold"
+                  color={order.status === "accepted" ? "green.500" : "red.500"}
+                  mt={2}
+                >
+                  Status: {order.status.toUpperCase()}
+                </Text>
+              )}
             </Box>
           ))}
         </VStack>

@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Text, VStack, Image, Button, HStack } from "@chakra-ui/react";
+import { Box, Text, VStack, Image, Button, HStack, useToast} from "@chakra-ui/react";
 import {
   removeFromCart,
   decreaseQuantity,
@@ -9,13 +9,14 @@ import {
   addOrder,
 } from "../../Redux/cartSlice";
 import { db } from "../../Firebase/Firebase"; // go up 1 level to src/Components
-// import { doc, getDoc, setDoc } from "firebase/firestore";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 function Cart() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const userEmail = sessionStorage.getItem("userEmail"); // Get user email from sessionStorage
+  const toast = useToast(); // Initialize the toast function
+
 
   const removeItemHandler = (itemId) => {
     dispatch(removeFromCart(itemId));
@@ -74,8 +75,8 @@ function Cart() {
       await setDoc(orderRef, { orders });
 
       // Clear cart after successful payment
-      dispatch(clearCart());
-      alert("Order placed successfully!");
+      // dispatch(clearCart());
+      // alert("Order placed successfully!");
 
       // Proceed to Razorpay payment
       const options = {
@@ -85,15 +86,21 @@ function Cart() {
         name: "DharaviVegShop",
         description: "Order Payment",
         handler: function (response) {
-          alert(
-            "Payment Successful! Payment ID: " + response.razorpay_payment_id
-          );
+          toast({
+            title: "Order Placed Successfully!",
+            description: `Payment ID: ${response.razorpay_payment_id}`,
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "top",
+          });
+          dispatch(clearCart());
           dispatch(addOrder(orderDetails)); // Store order in Redux
         },
         prefill: {
-          name: "John Doe",
+          name: "Rajaguru Sivakumar",
           email: userEmail, // Use logged-in user's email
-          contact: "9999999999",
+          contact: "9082512315",
         },
         theme: {
           color: "#38A169",
