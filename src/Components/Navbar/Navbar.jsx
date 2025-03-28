@@ -122,12 +122,12 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               >
                 Products
               </Link>
-              <Link
+              {/* <Link
                 className="hover:text-[#5EC49D] transition-all duration-150 ease"
                 to={"/admin/customer-proof"}
               >
                 Customer Proof
-              </Link>
+              </Link> */}
             </>
           ) : (
             <>
@@ -141,7 +141,7 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
               <Link to={"/contact"}>CONTACT</Link>
               <Link to={"/map"}>MAP</Link>
 
-              <Link to={"/orders"}>Orders</Link>
+              <Link to={"/orders"}>ORDERS</Link>
             </>
           )}
         </HStack>

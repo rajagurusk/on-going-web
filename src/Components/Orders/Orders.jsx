@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Text, VStack, HStack, Spinner, Badge } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  VStack,
+  HStack,
+  Spinner,
+  Badge,
+  Image,
+} from "@chakra-ui/react";
 import { db } from "../../Firebase/Firebase"; // Ensure correct Firebase path
 import { doc, getDoc } from "firebase/firestore";
 
@@ -91,13 +99,35 @@ function Orders() {
 
               <VStack spacing={2} mt={4} align="start">
                 <Text fontWeight="bold">Items:</Text>
-                {order.items.map((item, index) => (
-                  <HStack key={index} spacing={4} justifyContent="start">
-                    <Text>{item.itemTitle}</Text>
-                    <Text>Price: Rs. {item.price}</Text>
-                    <Text>Quantity: {item.quantity}</Text>
-                  </HStack>
-                ))}
+                <HStack spacing={6} wrap="wrap" align="start">
+                  {" "}
+                  {/* 👈 Wrap products horizontally */}
+                  {order.items.map((item, index) => (
+                    <Box
+                      key={index}
+                      p={3}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      boxShadow="sm"
+                    >
+                      {/* ✅ Display Product Image */}
+                      <Image
+                        src={item.itemImage} // Ensure the image URL exists
+                        alt={item.itemTitle}
+                        boxSize="80px"
+                        objectFit="cover"
+                        borderRadius="md"
+                      />
+                      {/* <HStack> */}
+                      <VStack align="start" spacing={1} mt={2}>
+                        <Text fontWeight="bold">{item.itemTitle}</Text>
+                        <Text>Price: Rs. {item.price}</Text>
+                        <Text>Quantity: {item.quantity}</Text>
+                      </VStack>
+                      {/* </HStack> */}
+                    </Box>
+                  ))}
+                </HStack>
               </VStack>
             </Box>
           ))}
