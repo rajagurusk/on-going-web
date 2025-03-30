@@ -1,10 +1,4 @@
-import {
-  Box,
-  HStack,
-  Image,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
+import { Box, HStack, Image, Stack, Text } from "@chakra-ui/react";
 import logo from "./Footer-Logo.png";
 import { FaLocationDot } from "react-icons/fa6";
 import { IoMdCall } from "react-icons/io";
@@ -32,9 +26,8 @@ function Footer() {
           height={"100%"}
           margin={"auto"}
           backgroundColor={"#6CB095"}
-          borderRadius={['30px' , '30px' , '30px' , '80px']}
+          borderRadius={["30px", "30px", "30px", "80px"]}
           color={"white"}
-          
         >
           {/*Footer Top  */}
           <Stack
@@ -46,7 +39,6 @@ function Footer() {
             <HStack
               display={["grid", "grid", "grid", "grid", "flex"]}
               gridTemplateColumns={"repeat(1, 1fr)"}
-           
               alignItems={"center"}
               justifyContent={"center"}
               gap={"20px"}
@@ -93,7 +85,8 @@ function Footer() {
                     <FaLocationDot color="#5EA98B" />
                   </Stack>
                   <Text width={"70%"}>
-                    Room no:519\A, Vivekananda CO.OP.Housing Society,90 Feet Road,Dharavi,Mumbai.
+                    Room no:519\A,Vivekananda CO.OP.Housing Society,90 Feet
+                    Road,Dharavi,Mumbai.
                   </Text>
                 </HStack>
 
@@ -130,7 +123,13 @@ function Footer() {
                     backgroundColor={"white"}
                     borderRadius={"50%"}
                   >
-                    <FaTwitter color="#5EA98B" />
+                    <a
+                      href="https://x.com/home"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaTwitter color="#5EA98B" />
+                    </a>
                   </Stack>
 
                   {/* Facebook */}
@@ -142,7 +141,13 @@ function Footer() {
                     backgroundColor={"white"}
                     borderRadius={"50%"}
                   >
-                    <FaFacebookF color="#5EA98B" />
+                    <a
+                      href="https://www.facebook.com/rajaguru.nadar.5/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaFacebookF color="#5EA98B" />
+                    </a>
                   </Stack>
 
                   {/* Instagram */}
@@ -154,7 +159,13 @@ function Footer() {
                     backgroundColor={"white"}
                     borderRadius={"50%"}
                   >
-                    <FaInstagram color="#5EA98B" />
+                    <a
+                      href="https://www.instagram.com/logarajaguru/?next=%2F&hl=en"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaInstagram color="#5EA98B" />
+                    </a>
                   </Stack>
 
                   {/* LinkedIn */}
@@ -166,7 +177,13 @@ function Footer() {
                     backgroundColor={"white"}
                     borderRadius={"50%"}
                   >
-                    <FaLinkedinIn color="#5EA98B" />
+                    <a
+                      href="https://www.linkedin.com/in/rajaguru-sivakumar-02824b259/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <FaLinkedinIn color="#5EA98B" />
+                    </a>{" "}
                   </Stack>
                 </HStack>
               </HStack>
