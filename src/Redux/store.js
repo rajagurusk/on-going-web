@@ -15,6 +15,7 @@ const persistedReducer = persistReducer(persistConfig, cartReducer);
 const store = configureStore({
   reducer: {
     cart: persistedReducer, // Use the persisted reducer
+
   },
 });
 

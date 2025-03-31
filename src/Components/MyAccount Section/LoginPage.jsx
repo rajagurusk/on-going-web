@@ -265,12 +265,12 @@ function LoginPage() {
             textAlign={"center"}
             flexWrap={["wrap", "wrap", "wrap", "wrap", "nowrap"]}
           >
-            {/* <Link
+            <Link
               to={"/forgetPassword"}
               className="hover:text-[#5EA98B] transition-all duration-150 ease font-medium"
             >
               Forgot Password?
-            </Link> */}
+            </Link>
 
             <Link
               to={"/signUp"}

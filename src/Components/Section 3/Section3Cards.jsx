@@ -13,9 +13,10 @@ import { FaShoppingBag, FaHeart, FaShareAlt } from "react-icons/fa";
 import data from "../../assets/Data";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../../Redux/cartSlice";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../../Firebase/Firebase";
+import { addToCart, removeFromCart } from "../../Redux/cartSlice";
+import { collection, addDoc} from "firebase/firestore";
+import { db } from "../../Firebase/Firebase"; 
+
 
 function Section3Cards() {
   const dispatch = useDispatch();
