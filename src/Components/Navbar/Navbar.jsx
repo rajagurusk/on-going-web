@@ -10,67 +10,31 @@ import { useSelector } from "react-redux";
 
 function Navbar({ isLoggedIn, setIsLoggedIn }) {
   const cartLength = useSelector((state) => state.cart.cartItems.length);
-
   const [isSticky, setIsSticky] = useState(false);
   const [userFirstName, setUserFirstName] = useState("");
 
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const products = [
-    "Watermelon",
-    "Tomato",
-    "Mushroom",
-    "Broccoli",
-    "Corn",
-    "Asparagus",
-    "Onion",
-  ];
-
   useEffect(() => {
-    // This effect runs once when the component mounts
     const storedName = sessionStorage.getItem("userFirstName");
-    // const loggedInStatus = sessionStorage.getItem("isLoggedIn") === "true";
-
     if (storedName) {
       setUserFirstName(storedName);
-      // setIsLoggedIn(true);
-
-      // console.log(userFirstName , "-->")
     }
-  }, []); // Empty dependency array ensures this runs once
-
-  
-
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem("userFirstName");
     sessionStorage.removeItem("isLoggedIn");
+    sessionStorage.removeItem("isAdmin");
     setUserFirstName("");
     setIsLoggedIn(false);
     window.location.reload(); // Refresh page after logout
-
-    sessionStorage.removeItem("userFirstName");
-    sessionStorage.removeItem("isLoggedIn");
-    sessionStorage.removeItem("isAdmin");  // Remove admin session
-    setUserFirstName("");
-    setIsLoggedIn(false);
-    window.location.reload(); // Refresh page after logout
-  
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const scrollThreshold = 0.1; // 10% of the window height
-
-      setIsSticky(scrollPosition >= windowHeight * scrollThreshold);
+      setIsSticky(window.scrollY >= window.innerHeight * 0.1);
     };
-
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -87,138 +51,83 @@ function Navbar({ isLoggedIn, setIsLoggedIn }) {
       <HStack
         wrap={["wrap", "wrap", "wrap", "nowrap"]}
         width={"100%"}
-        height={"100%"}
-        display={"flex"}
-        justifyContent={[
-          "space-evenly",
-          "space-evenly",
-          "space-evenly",
-          "center",
-        ]}
+        justifyContent={["space-evenly", "space-evenly", "space-evenly", "center"]}
         alignItems={"center"}
         gap={["10px", "10px", "10px", "30px"]}
       >
-        {/* Dynamic Nav Links based on User Type */}
-        <HStack
-          className="navLinks"
-          width={"40%"}
-          height={"100%"}
-          justifyContent={"space-around"}
-          alignItems={"center"}
-          gap={"30px"}
-          fontWeight={"500"}
-        >
+        {/* Navigation Links */}
+        <HStack className="navLinks" width={"40%"} gap={"30px"} fontWeight={"500"}>
           {sessionStorage.getItem("isAdmin") === "true" ? (
             <>
-              <Link
-                className="hover:text-[#5EC49D] transition-all duration-150 ease"
-                to="/admin/orders" // Ensure this is the correct path to view the orders
-              >
+              <Link className="hover:text-[#5EC49D]" to="/admin/orders">
                 View Orders
               </Link>
-              <Link
-                className="hover:text-[#5EC49D] transition-all duration-150 ease"
-                to={"/admin/products"}
-              >
+              <Link className="hover:text-[#5EC49D]" to="/admin/products">
                 Products
               </Link>
-              {/* <Link
-                className="hover:text-[#5EC49D] transition-all duration-150 ease"
-                to={"/admin/customer-proof"}
-              >
-                Customer Proof
-              </Link> */}
             </>
           ) : (
             <>
-              <Link
-                className="hover:text-[#5EC49D] transition-all duration-150 ease"
-                to={"/"}
-              >
+              <Link className="hover:text-[#5EC49D]" to="/">
                 HOME
               </Link>
               <PagesLink />
-              <Link to={"/contact"}>CONTACT</Link>
-              <Link to={"/map"}>MAP</Link>
-
-              <Link to={"/orders"}>ORDERS</Link>
+              <Link to="/contact">CONTACT</Link>
+              <Link to="/map">MAP</Link>
+              <Link to="/orders">ORDERS</Link>
             </>
           )}
         </HStack>
 
-        <HStack
-          className="drawer-icon"
-          display={["block", "block", "block", "none"]}
-          width={"40%"}
-        >
+        {/* Mobile Drawer Icon */}
+        <HStack className="drawer-icon" display={["block", "block", "block", "none"]} width={"40%"}>
           <DrawerMenu />
         </HStack>
 
-        {/* Right Links */}
-        <HStack
-          width={["90%", "70%", "70%", "40%"]}
-          height={"100%"}
-          marginBottom={["30px", "30px", "30px", "0"]}
-          justifyContent={"center"}
-          alignItems={"center"}
-          padding={"0 20px"}
-          gap={"30px"}
-        >
-          <SearchBox products={products} />
+        {/* Right Side: Search, Cart, User */}
+        <HStack width={["90%", "70%", "70%", "40%"]} gap={"30px"} justifyContent={"center"}>
+          <SearchBox products={["Watermelon", "Tomato", "Mushroom", "Broccoli", "Corn", "Asparagus", "Onion"]} />
 
-          {/* Cart */}
-          <Link>
-            <Container
-              cursor={"pointer"}
-              position={"relative"}
-              width={"50px"}
-              height={"50px"}
-              display={["none", "flex", "flex", "flex"]}
-              justifyContent={"center"}
-              alignItems={"center"}
-              borderRadius={"50%"}
-            >
-              <Link to={"/Cart"}>
-                <i className="ri-shopping-bag-2-line text-2xl text-[#5EC49D] "></i>
-              </Link>
-              <Box
-                className="group"
-                position={"absolute"}
-                left={"25px"}
-                top={"20px"}
-                width={"25px"}
-                height={"25px"}
-                backgroundColor={"#5EC49D"}
-                fontSize={"12px"}
-                borderRadius={"50%"}
-                display={"flex"}
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                {`${cartLength}`}
-              </Box>
+          {/* Cart Section (Fixed Nested Links Issue) */}
+          <Link to="/Cart">
+            <Container cursor={"pointer"} position={"relative"} width={"50px"} height={"50px"}>
+              <i className="ri-shopping-bag-2-line text-2xl text-[#5EC49D]"></i>
+              {cartLength > 0 && (
+                <Box
+                  position={"absolute"}
+                  left={"25px"}
+                  top={"20px"}
+                  width={"25px"}
+                  height={"25px"}
+                  backgroundColor={"#5EC49D"}
+                  fontSize={"12px"}
+                  borderRadius={"50%"}
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                >
+                  {cartLength}
+                </Box>
+              )}
             </Container>
           </Link>
 
-          {/* User Section */}
+          {/* User Account Section */}
           <HStack>
             {userFirstName ? (
               <>
                 <Text fontSize={"18px"} color="#5EC49D">
                   {userFirstName}
                 </Text>
-                <Button
-                  onClick={handleLogout}
-                  colorScheme="red"
-                  size="sm"
-                  ml={2} // Adds some spacing
-                >
+                <Button onClick={handleLogout} colorScheme="red" size="sm" ml={2}>
                   Logout
                 </Button>
               </>
             ) : (
-              <Link to={"/my-account"}>
-                <i className="ri-user-3-line text-2xl text-[#5EC49D] hover:text-[#451D1D] font-medium"></i>
+              <Link to="/my-account">
+                <Box as="span">
+                  <i className="ri-user-3-line text-2xl text-[#5EC49D] hover:text-[#451D1D] font-medium"></i>
+                </Box>
               </Link>
             )}
           </HStack>
