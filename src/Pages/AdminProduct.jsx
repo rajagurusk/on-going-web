@@ -16,24 +16,16 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Flex,
+  Flex
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import initialData from "../assets/Data"; // Importing product data
+import initialData from "../assets/Products"; // Importing product data
 
 function AdminProduct() {
   const [products, setProducts] = useState(initialData); // Manage product list
   const [editIndex, setEditIndex] = useState(null); // Track which product is being edited
-  const [editForm, setEditForm] = useState({
-    itemTitle: "",
-    price: "",
-    itemImage: "",
-  });
-  const [newProductForm, setNewProductForm] = useState({
-    itemTitle: "",
-    price: "",
-    itemImage: "",
-  });
+  const [editForm, setEditForm] = useState({ itemTitle: "", price: "", itemImage: "" });
+  const [newProductForm, setNewProductForm] = useState({ itemTitle: "", price: "", itemImage: "" });
 
   const { isOpen, onOpen, onClose } = useDisclosure(); // Modal control
 
@@ -93,12 +85,7 @@ function AdminProduct() {
       >
         {products.map((item, index) => (
           <GridItem key={item.id} colSpan={1} rowSpan={1}>
-            <Box
-              width={"100%"}
-              height={"100%"}
-              overflow={"hidden"}
-              marginTop={"2rem"}
-            >
+            <Box width={"100%"} height={"100%"} overflow={"hidden"} marginTop={"2rem"}>
               {/* Check if this item is in edit mode */}
               {editIndex === index ? (
                 // EDIT FORM
@@ -122,11 +109,7 @@ function AdminProduct() {
                     onChange={handleChange}
                     placeholder="Enter image URL"
                   />
-                  <Button
-                    colorScheme="green"
-                    size="sm"
-                    onClick={() => handleSave(index)}
-                  >
+                  <Button colorScheme="green" size="sm" onClick={() => handleSave(index)}>
                     Save
                   </Button>
                 </VStack>
@@ -135,38 +118,22 @@ function AdminProduct() {
                 <VStack alignItems={"flex-start"}>
                   {/* Product Image */}
                   <HStack position={"relative"} overflow={"hidden"}>
-                    <Image
-                      borderRadius={"20px"}
-                      boxSize={"250px"}
-                      src={item.itemImage}
-                    />
+                    <Image borderRadius={"20px"} boxSize={"250px"} src={item.itemImage} />
                   </HStack>
 
                   {/* Product Details */}
                   <VStack alignItems={"flex-start"} spacing={2}>
-                    <Text
-                      fontWeight={"600"}
-                      letterSpacing={"2px"}
-                      fontSize={"20px"}
-                    >
+                    <Text fontWeight={"600"} letterSpacing={"2px"} fontSize={"20px"}>
                       {item.itemTitle}
                     </Text>
                     <Text fontWeight={700}>Rs. {item.price} </Text>
 
                     {/* Edit & Delete Buttons */}
                     <HStack>
-                      <Button
-                        colorScheme="blue"
-                        size="sm"
-                        onClick={() => handleEdit(index)}
-                      >
+                      <Button colorScheme="blue" size="sm" onClick={() => handleEdit(index)}>
                         Edit
                       </Button>
-                      <Button
-                        colorScheme="red"
-                        size="sm"
-                        onClick={() => handleDelete(item.id)}
-                      >
+                      <Button colorScheme="red" size="sm" onClick={() => handleDelete(item.id)}>
                         Delete
                       </Button>
                     </HStack>
@@ -179,12 +146,12 @@ function AdminProduct() {
       </Grid>
 
       {/* Add Product Button */}
-      {/* Centered Add Product Button */}
-      <Flex justifyContent="center" alignItems="center" mt="4rem">
-        <Button colorScheme="teal" size="lg" onClick={onOpen}>
-          Add Product
-        </Button>
-      </Flex>
+       {/* Centered Add Product Button */}
+    <Flex justifyContent="center" alignItems="center" mt="4rem">
+      <Button colorScheme="teal" size="lg" onClick={onOpen}>
+        Add Product
+      </Button>
+    </Flex>
 
       {/* Modal for Adding New Product */}
       <Modal isOpen={isOpen} onClose={onClose}>
