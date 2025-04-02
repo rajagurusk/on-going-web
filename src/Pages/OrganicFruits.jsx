@@ -1,6 +1,6 @@
 import React from 'react'
-import OrganicFruitsSection from '../Components/Organic Fruits Section/OrganicFruitsSection'
-import OrganicFruitsHero from '../Components/Organic Fruits Section/OrganicFruitsHero'
+import OrganicFruitsSection from '../Components/OrganicFruitsSection/OrganicFruitsSection'
+import OrganicFruitsHero from '../Components/OrganicFruitsSection/OrganicFruitsHero'
 
 function OrganicFruits() {
   return (
