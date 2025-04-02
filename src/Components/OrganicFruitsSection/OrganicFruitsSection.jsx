@@ -2,7 +2,7 @@ import { Box, HStack, Stack, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
 import SortSection from './SortSection'
 import OrganicFruitsCards from './OrganicFruitsCards'
-import OrganicFruitsSidebar from './OrganicFruitsSIdebar'
+import OrganicFruitsSidebar from './OrganicFruitsSidebar'
 
 function OrganicFruitsSection() {
   return (
