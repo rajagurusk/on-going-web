@@ -20,7 +20,7 @@ function AdminOrders() {
           const userOrders = orderDoc.data().orders || [];
 
           // ✅ Fetch the registered address from "users" collection
-          const userRef = doc(db, "users", userEmail);
+          const userRef = doc(db, "user", userEmail);
           const userSnap = await getDoc(userRef);
           const userAddress = userSnap.exists() ? userSnap.data().address || "No Address Provided" : "No Address Found";
 
