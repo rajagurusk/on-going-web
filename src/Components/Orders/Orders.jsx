@@ -10,6 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { db } from "../../Firebase/Firebase"; // Ensure correct Firebase path
 import { doc, getDoc } from "firebase/firestore";
+import Map from "../Map/Map"; // Existing interactive map
+import SmallMap from "../Map/SmallMap"; // New small static map
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -28,7 +30,14 @@ function Orders() {
         const orderSnapshot = await getDoc(orderRef);
 
         if (orderSnapshot.exists()) {
-          setOrders(orderSnapshot.data().orders || []);
+          const fetchedOrders = orderSnapshot.data().orders || [];
+
+          // Sort orders by date in descending order (newest first)
+          const sortedOrders = fetchedOrders.sort(
+            (a, b) => new Date(b.date) - new Date(a.date)
+          );
+
+          setOrders(sortedOrders);
         } else {
           setOrders([]);
         }
@@ -53,9 +62,7 @@ function Orders() {
 
   return (
     <Box p={5} textAlign="center">
-      <Text fontSize="2xl" fontWeight="bold">
-        Your Orders
-      </Text>
+      <Text fontSize="2xl" fontWeight="bold">Your Orders</Text>
 
       {orders.length === 0 ? (
         <Text>No orders found!</Text>
@@ -70,9 +77,7 @@ function Orders() {
               boxShadow="md"
               width="100%"
             >
-              <Text fontSize="xl" fontWeight="600">
-                Order ID: {order.id}
-              </Text>
+              <Text fontSize="xl" fontWeight="600">Order ID: {order.id}</Text>
               <Text>Order Date: {order.date}</Text>
               <Text fontSize="lg" fontWeight="600" mt={2}>
                 Total: Rs. {order.totalAmount}
@@ -87,7 +92,9 @@ function Orders() {
                       ? "green"
                       : order.status === "shipped"
                       ? "orange"
-                      : "blue"
+                      : order.status === "accepted"
+                      ? "blue"
+                      : "gray"
                   }
                   fontSize="md"
                   p={1}
@@ -100,8 +107,6 @@ function Orders() {
               <VStack spacing={2} mt={4} align="start">
                 <Text fontWeight="bold">Items:</Text>
                 <HStack spacing={6} wrap="wrap" align="start">
-                  {" "}
-                  {/* 👈 Wrap products horizontally */}
                   {order.items.map((item, index) => (
                     <Box
                       key={index}
@@ -110,25 +115,25 @@ function Orders() {
                       borderRadius="md"
                       boxShadow="sm"
                     >
-                      {/* ✅ Display Product Image */}
                       <Image
-                        src={item.itemImage} // Ensure the image URL exists
+                        src={item.itemImage}
                         alt={item.itemTitle}
                         boxSize="80px"
                         objectFit="cover"
                         borderRadius="md"
                       />
-                      {/* <HStack> */}
                       <VStack align="start" spacing={1} mt={2}>
                         <Text fontWeight="bold">{item.itemTitle}</Text>
                         <Text>Price: Rs. {item.price}</Text>
                         <Text>Quantity: {item.quantity}</Text>
                       </VStack>
-                      {/* </HStack> */}
                     </Box>
                   ))}
                 </HStack>
               </VStack>
+
+              {/* Display Small Map if Order is Accepted */}
+              {order.status === "accepted" && <SmallMap />}
             </Box>
           ))}
         </VStack>

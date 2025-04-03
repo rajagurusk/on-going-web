@@ -24,16 +24,17 @@ function AdminOrders() {
           const userSnap = await getDoc(userRef);
           const userAddress = userSnap.exists() ? userSnap.data().address || "No Address Provided" : "No Address Found";
 
-          console.log(userSnap.data()); // Log the user data to check address field
-
-
           userOrders.forEach((order) => {
             allOrders.push({ ...order, userEmail, userAddress }); // Add userAddress to order
           });
         }
-        
 
-        setOrders(allOrders);
+        // ✅ Sort orders by date in descending order (newest first)
+        const sortedOrders = allOrders.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+
+        setOrders(sortedOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -86,6 +87,47 @@ function AdminOrders() {
     }
   };
 
+  // ✅ Function to mark an order as Delivered and remove it from Firestore
+  const markOrderAsDelivered = async (orderId, userEmail) => {
+    try {
+      const orderRef = doc(db, "orders", userEmail);
+      const orderSnapshot = await getDoc(orderRef);
+
+      if (orderSnapshot.exists()) {
+        let updatedOrders = orderSnapshot.data().orders.filter((order) => order.id !== orderId);
+
+        // ✅ If no orders remain, delete the document, else update it
+        if (updatedOrders.length === 0) {
+          await setDoc(orderRef, { orders: [] });
+        } else {
+          await setDoc(orderRef, { orders: updatedOrders });
+        }
+
+        // ✅ Remove order from the UI
+        setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+
+        toast({
+          title: "Order Delivered",
+          description: "The order has been successfully delivered.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    } catch (error) {
+      console.error("Error marking order as delivered:", error);
+      toast({
+        title: "Error",
+        description: "Failed to mark order as delivered. Try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Box p={5} textAlign="center">
@@ -97,9 +139,7 @@ function AdminOrders() {
 
   return (
     <Box p={5} textAlign="center">
-      <Text fontSize="2xl" fontWeight="bold">
-        All User Orders
-      </Text>
+      <Text fontSize="2xl" fontWeight="bold">All User Orders</Text>
 
       {orders.length === 0 ? (
         <Text>No orders found!</Text>
@@ -114,9 +154,7 @@ function AdminOrders() {
               boxShadow="md"
               width="100%"
             >
-              <Text fontSize="xl" fontWeight="600">
-                Order ID: {order.id}
-              </Text>
+              <Text fontSize="xl" fontWeight="600">Order ID: {order.id}</Text>
               <Text>Order Date: {order.date}</Text>
               <Text fontSize="lg" fontWeight="600" mt={2}>
                 Total: Rs. {order.totalAmount}
@@ -139,7 +177,7 @@ function AdminOrders() {
                 ))}
               </VStack>
 
-              {/* ✅ Accept & Reject Buttons */}
+              {/* ✅ Accept, Reject & Delivered Buttons */}
               <HStack spacing={4} mt={4} justifyContent="center">
                 <Button
                   colorScheme="green"
@@ -154,6 +192,12 @@ function AdminOrders() {
                   isDisabled={order.status === "rejected"}
                 >
                   Reject
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  onClick={() => markOrderAsDelivered(order.id, order.userEmail)}
+                >
+                  Delivered
                 </Button>
               </HStack>
 
